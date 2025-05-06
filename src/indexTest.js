@@ -1,5 +1,5 @@
 // api
-
+url_real ="http://35.213.129.74:30600/"
 document.getElementById('user-name').textContent = "Hi " + localStorage.getItem("username");
 let markers = [];
 const clearDataBtn = document.getElementById("clear-data-btn");
@@ -9,7 +9,7 @@ let idbinReal = 1;
 const currentTime = new Date();
 async function fetchDataAndUpdateHTML(idbin) {
     try {
-        const response = await fetch(`http://localhost:8090/api/databins/${idbin}`, {
+        const response = await fetch(`${url_real}api/databins/${idbin}`, {
             method: 'GET',
             headers: {
                 'Accept': '*/*',
@@ -152,7 +152,7 @@ function addMarkerToMap(markerInfo) {
 
 function fetchAndDisplayBins() {
 
-    fetch('http://localhost:8090/api/bins', {
+    fetch(`${url_real}api/bins`, {
         headers: {
             'Authorization': 'Bearer ' + token,
             'Accept': '*/*'
@@ -164,7 +164,7 @@ function fetchAndDisplayBins() {
                 const binId = bin.id;
 
                 // Gọi API /api/databins/{id}
-                fetch(`http://localhost:8090/api/databins/${binId}`, {
+                fetch(`${url_real}api/databins/${binId}`, {
                     headers: {
                         'Authorization': 'Bearer ' + token,
                         'Accept': '*/*'
@@ -317,7 +317,7 @@ let isEditing = false;
 // Lấy dữ liệu và cập nhật giao diện
 async function fetchDataAndUpdateHTML1(idbin) {
     try {
-        const response = await fetch(`http://localhost:8090/api/thresholds/${idbin}`, {
+        const response = await fetch(`${url_real}api/thresholds/${idbin}`, {
             headers: { 'Authorization': `Bearer ${token}`,'Accept': '*/*' }
         });
         const data = await response.json();
@@ -404,7 +404,7 @@ async function saveData() {
     };
 
     try {
-        const response = await fetch(`http://localhost:8090/api/thresholds/${idbinReal}`, {
+        const response = await fetch(`${url_real}api/thresholds/${idbinReal}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -428,7 +428,7 @@ async function saveData() {
 
 // Gọi hàm fetch dữ liệu khi tải trang
 
-const deleteUrl = `http://localhost:8090/api/warnings`; // URL DELETE API
+const deleteUrl = `${url_real}api/warnings`; // URL DELETE API
 //const tableBody = document.getElementById("table-body");
 //const clearDataBtn = document.getElementById("clear-data-btn");
 
@@ -437,7 +437,7 @@ async function fetchAndDisplayData(idbin) {
     try {
         tableBody.innerHTML = "";
 
-        const response = await fetch(`http://localhost:8090/api/warnings/bin/${idbin}`, {
+        const response = await fetch(`http://35.213.129.74:30600/api/warnings/bin/${idbin}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -454,13 +454,14 @@ async function fetchAndDisplayData(idbin) {
         apiData.forEach(data1 => {
             const row = document.createElement("tr");
 
-            inputTime1 = new Date(data1.time * 1000);
+            //inputTime1 = new Date(data1.time * 1000);
+            //<td>${inputTime1.toLocaleString()}</td>
             row.innerHTML = `
                 <td>${data1.id}</td>
                 <td>${data1.idbin}</td>
                 <td class="message-cell">${data1.message}</td>
                 <td>${data1.namebin}</td>
-                <td>${inputTime1.toLocaleString()}</td>
+                <td>${data1.time}</td>
             `;
             tableBody.appendChild(row);
         });
