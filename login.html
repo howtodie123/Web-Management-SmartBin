@@ -12,7 +12,10 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f5f5f5;
+            background-image: url('img/background.png');
+            background-size: cover; /* Phủ toàn bộ màn hình */
+            background-repeat: no-repeat;
+            background-position: center center;
             color: #333;
         }
 
@@ -83,40 +86,46 @@
 </div>
 
 <script>
+
     async function login() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        // Gửi yêu cầu POST tới API đăng nhập
+        if (!username || !password) {
+            alert("Vui lòng nhập đầy đủ thông tin");
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:8080/api/accounts/authenticate', {
+            const response = await fetch('http://localhost:8090/api/auth/sign-in', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
+                    email: username,
+                    password: password })
             });
 
             const data = await response.json();
 
-            if (response.ok) {
-                // Lưu thông tin người dùng vào sessionStorage
-                sessionStorage.setItem('user', JSON.stringify(data));
+            if (response.ok && data.status === "SUCCESS") {
 
-                // Chuyển hướng đến trang chủ
-                window.location.href = 'indexReal.html';
+                const res = data.response;
+                localStorage.setItem("jwtToken", data.response.token);
+                localStorage.setItem("authToken", data.response.token);
+                localStorage.setItem("username", res.username);
+
+                window.location.href = 'indexKLTN.html';
             } else {
-                // Thông báo lỗi nếu tài khoản hoặc mật khẩu sai
-                alert(data.message || 'Invalid username or password');
+                alert(data.message || 'Đăng nhập không thành công!');
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
+            console.error('Lỗi:', error);
+            alert('Không thể kết nối đến server. Vui lòng thử lại sau.');
         }
+        const token = localStorage.getItem('authToken');
+
     }
+
 </script>
 </body>
 </html>

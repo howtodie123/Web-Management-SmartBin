@@ -1,10 +1,15 @@
 // api
-const token = localStorage.getItem('authToken');
 
+document.getElementById('user-name').textContent = "Hi " + localStorage.getItem("username");
+let markers = [];
+const clearDataBtn = document.getElementById("clear-data-btn");
+const tableBody = document.getElementById("table-body");
+const token = localStorage.getItem('authToken');
+let idbinReal = 1;
 const currentTime = new Date();
-async function fetchDataAndUpdateHTML() {
+async function fetchDataAndUpdateHTML(idbin) {
     try {
-        const response = await fetch('http://localhost:8090/api/databins/latest', {
+        const response = await fetch(`http://localhost:8090/api/databins/${idbin}`, {
             method: 'GET',
             headers: {
                 'Accept': '*/*',
@@ -58,6 +63,7 @@ async function fetchDataAndUpdateHTML() {
             updateWaterLevel('waterLevel4', 'percentage4', data.storage4);
 
             // Cập nhật marker đầu tiên bằng dữ liệu API
+
             markers[0].name = data.name; // Cập nhật tên
             markers[0].status = data.status; // Cập nhật trạng thái
 
@@ -89,66 +95,122 @@ async function fetchDataAndUpdateHTML() {
         console.error('Error fetching data:', error);
     }
 }
-fetchDataAndUpdateHTML();
-//
-var map = L.map('map').setView([10.870121140644871, 106.80366338285954], 50);
+
+// Khởi tạo bản đồ
+var map = L.map('map').setView([10.870121140644871, 106.80366338285954], 17);
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
 var customIcon = L.icon({
     iconUrl: 'img/Garbage.png',
-    iconSize: [60, 70],
-    iconAnchor: [22, 42],
+    iconSize: [72, 84],
+    iconAnchor: [26, 50],
     popupAnchor: [-3, -42]
 });
-
-var markers = [
-    { name: "Tòa B , ĐH CNTT, DHQG_HCM", location: [10.870121140644871, 106.80366338285954] }
-];
 
 var markerObjects = {};
 
 function addMarkerToMap(markerInfo) {
-    // Create a button in the popup that navigates to the Dashboard
-    var popupContent = `<strong>Name: </strong>${markerInfo.name}<br>
-                         <strong>Status: </strong>${markerInfo.status}<br>
-                         <strong>Storage 1: </strong>${markerInfo.storage1}%<br>
-                         <strong>Storage 2: </strong>${markerInfo.storage2}%<br>
-                         <strong>Storage 3: </strong>${markerInfo.storage3}%<br>
-                         <strong>Storage 4: </strong>${markerInfo.storage4}%<br>
-                         <strong>Ram: </strong>${markerInfo.ram}%<br>
-                         <strong>Temperature: </strong>${markerInfo.temperature}°C<br>
-                         <strong>Last update:</strong> ${markerInfo.lastupdate}<br>
-                         <button onclick="goToDashboard('${markerInfo.name}')">Detail</button>`;
-    // <strong>Location: </strong>${markerInfo.location.join(', ')}<br>
-    // Add the marker to the map with custom icon and popup
-    var marker = L.marker(markerInfo.location, {icon: customIcon}).addTo(map)
+
+    const popupContent = `
+            <strong>Name: </strong>${markerInfo.name}<br>
+            <strong>Status: </strong>${markerInfo.status}<br>
+            <strong>Storage 1: </strong>${markerInfo.storage1}%<br>
+            <strong>Storage 2: </strong>${markerInfo.storage2}%<br>
+            <strong>Storage 3: </strong>${markerInfo.storage3}%<br>
+            <strong>Storage 4: </strong>${markerInfo.storage4}%<br>
+            <strong>Ram: </strong>${markerInfo.ram}%<br>
+            <strong>Temperature: </strong>${markerInfo.temperature}°C<br>
+            <strong>Last update:</strong> ${new Date(markerInfo.lastupdate * 1000).toLocaleString()}<br>
+            <button onclick="goToDashboard('${markerInfo.idbin}')">Detail</button>`;
+
+    const marker = L.marker(markerInfo.location, {icon: customIcon}).addTo(map)
         .bindPopup(popupContent);
 
-    var listItem = document.createElement('li');
+    const listItem = document.createElement('li');
     listItem.textContent = markerInfo.name;
     listItem.addEventListener('click', function () {
-        map.setView(markerInfo.location, 50);
+        map.setView(markerInfo.location, 17);
         marker.openPopup();
     });
 
-    var removeButton = document.createElement('button');
-    removeButton.textContent = 'Remove';
-    removeButton.addEventListener('click', function (event) {
-        event.stopPropagation();
-        map.removeLayer(marker);
-        document.getElementById('marker-list').removeChild(listItem);
-    });
-
-    listItem.appendChild(removeButton);
+    // const removeButton = document.createElement('button');
+    // removeButton.textContent = 'Remove';
+    // removeButton.addEventListener('click', function (event) {
+    //     event.stopPropagation();
+    //     map.removeLayer(marker);
+    //     document.getElementById('marker-list').removeChild(listItem);
+    // });
+    //
+    // listItem.appendChild(removeButton);
     document.getElementById('marker-list').appendChild(listItem);
 
     markerObjects[markerInfo.name] = marker;
 }
 
-function goToDashboard(locationName) {
+function fetchAndDisplayBins() {
+
+    fetch('http://localhost:8090/api/bins', {
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': '*/*'
+        }
+    })
+        .then(res => res.json())
+        .then(bins => {
+            bins.forEach(bin => {
+                const binId = bin.id;
+
+                // Gọi API /api/databins/{id}
+                fetch(`http://localhost:8090/api/databins/${binId}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Accept': '*/*'
+                    }
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error(`Không tìm thấy dữ liệu cho bin ID ${binId}`);
+                        return res.json();
+                    })
+                    .then(data => {
+
+                        inputTime = new Date(data.lastupdate * 1000);
+                        const diffMs = currentTime - inputTime;
+                        const diffHours = diffMs / (1000 * 60 * 60);
+                        const status = diffHours > 1 ? "offline" : "online";
+
+
+                        const markerInfo = {
+                            idbin : data.idbin,
+                            name: data.name,
+                            location: [parseFloat(bin.locationX), parseFloat(bin.locationY)],
+                            status: status,
+                            storage1: data.storage1,
+                            storage2: data.storage2,
+                            storage3: data.storage3,
+                            storage4: data.storage4,
+                            ram: data.ram,
+                            temperature: data.temperature,
+                            lastupdate: data.lastupdate
+                        };
+                        addMarkerToMap(markerInfo);
+                    })
+                    .catch(err => console.error('Lỗi khi fetch databins:', err));
+            });
+        })
+        .catch(err => console.error('Lỗi khi fetch bins:', err));
+}
+
+fetchAndDisplayBins();
+
+function goToDashboard(idbin) {
     // Hiển thị giao diện Dashboard và ẩn bản đồ
+    idbinReal = idbin;
+    fetchDataAndUpdateHTML(idbin);
+    fetchDataAndUpdateHTML1(idbin);
+    fetchAndDisplayData(idbin);
     document.getElementById('dashboard-content').style.display = 'block';
     document.getElementById('map').style.display = 'none';
     document.querySelector('.right-bar-buttons').style.display = 'none';
@@ -162,26 +224,27 @@ function goToDashboard(locationName) {
 // Existing dashboard link click handler to also clear the map view
 document.getElementById('dashboard-link').addEventListener('click', function (event) {
     event.preventDefault();
-    goToDashboard("Dashboard");
+    goToDashboard(idbinReal);
 });
 markers.forEach(addMarkerToMap);
 
-document.getElementById('add-marker').addEventListener('click', function () {
-    var name = document.getElementById('marker-name').value;
-    var lat = document.getElementById('marker-lat').value;
-    var lng = document.getElementById('marker-lng').value;
-
-    if (name && lat && lng && !isNaN(lat) && !isNaN(lng)) {
-        var markerInfo = { name: name, location: [parseFloat(lat), parseFloat(lng)] };
-        addMarkerToMap(markerInfo);
-    } else {
-        alert('Please provide valid marker name and coordinates.');
-    }
-
-    document.getElementById('marker-name').value = '';
-    document.getElementById('marker-lat').value = '';
-    document.getElementById('marker-lng').value = '';
-});
+// // thêm thùng rác
+// document.getElementById('add-marker').addEventListener('click', function () {
+//     var name = document.getElementById('marker-name').value;
+//     var lat = document.getElementById('marker-lat').value;
+//     var lng = document.getElementById('marker-lng').value;
+//
+//     if (name && lat && lng && !isNaN(lat) && !isNaN(lng)) {
+//         var markerInfo = { name: name, location: [parseFloat(lat), parseFloat(lng)] };
+//         addMarkerToMap(markerInfo);
+//     } else {
+//         alert('Please provide valid marker name and coordinates.');
+//     }
+//
+//     document.getElementById('marker-name').value = '';
+//     document.getElementById('marker-lat').value = '';
+//     document.getElementById('marker-lng').value = '';
+// });
 
 function toggleOverlay(id) {
     var overlay = document.getElementById(id);
@@ -204,11 +267,7 @@ document.getElementById('map-container').addEventListener('click', function(even
     }
 });
 
-// Dashboard functionality
-document.getElementById('dashboard-link').addEventListener('click', function (event) {
-    event.preventDefault();
-    goToDashboard("Dashboard");
-});
+
 
 // Home functionality
 document.getElementById('home-link').addEventListener('click', function (event) {
@@ -219,7 +278,7 @@ document.getElementById('home-link').addEventListener('click', function (event) 
 });
 
 // Default behavior: show the Home page
-//document.getElementById('home-link').click();
+document.getElementById('home-link').click();
 
 // Logout functionality
 document.getElementById('logout').addEventListener('click', function() {
@@ -256,9 +315,9 @@ let originalData = {};
 let isEditing = false;
 
 // Lấy dữ liệu và cập nhật giao diện
-async function fetchDataAndUpdateHTML1() {
+async function fetchDataAndUpdateHTML1(idbin) {
     try {
-        const response = await fetch('http://localhost:8090/api/thresholds/1', {
+        const response = await fetch(`http://localhost:8090/api/thresholds/${idbin}`, {
             headers: { 'Authorization': `Bearer ${token}`,'Accept': '*/*' }
         });
         const data = await response.json();
@@ -275,7 +334,7 @@ async function fetchDataAndUpdateHTML1() {
             document.getElementById('temperature-value').textContent = `${data.temperature}°C`;
 
             // // Lưu lại dữ liệu gốc
-            // originalData = { ...data };
+            originalData = { ...data };
         } else {
             throw new Error(`Failed to fetch data: ${response.status}`);
         }
@@ -345,7 +404,7 @@ async function saveData() {
     };
 
     try {
-        const response = await fetch('http://localhost:8090/api/thresholds/1', {
+        const response = await fetch(`http://localhost:8090/api/thresholds/${idbinReal}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -357,7 +416,7 @@ async function saveData() {
         if (response.ok) {
             alert("Data saved successfully!");
             // Gọi lại API GET để lấy lại dữ liệu mới và cập nhật lại giao diện
-            fetchDataAndUpdateHTML1();
+            fetchDataAndUpdateHTML1(idbinReal);
             toggleEdit();  // Chuyển về chế độ xem
         } else {
             throw new Error(`Failed to save data: ${response.status}`);
@@ -368,25 +427,21 @@ async function saveData() {
 }
 
 // Gọi hàm fetch dữ liệu khi tải trang
-fetchDataAndUpdateHTML1();
 
-const apiUrl = 'http://localhost:8090/api/warnings'; // URL API thực tế
-const deleteUrl = 'http://localhost:8090/api/warnings'; // URL DELETE API
-const tableBody = document.getElementById("table-body");
-const clearDataBtn = document.getElementById("clear-data-btn");
+const deleteUrl = `http://localhost:8090/api/warnings`; // URL DELETE API
+//const tableBody = document.getElementById("table-body");
+//const clearDataBtn = document.getElementById("clear-data-btn");
 
 // Hàm gọi API và hiển thị dữ liệu
-async function fetchAndDisplayData() {
+async function fetchAndDisplayData(idbin) {
     try {
         tableBody.innerHTML = "";
 
-        const token = localStorage.getItem('jwtToken'); // Lấy token từ localStorage
-
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`http://localhost:8090/api/warnings/bin/${idbin}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
+                'Accept': '*/*'
             }
         });
 
@@ -396,19 +451,17 @@ async function fetchAndDisplayData() {
 
         const apiData = await response.json();
 
-        apiData.forEach(data => {
+        apiData.forEach(data1 => {
             const row = document.createElement("tr");
-            inputTime1 = new Date(data.time * 1000);
+
+            inputTime1 = new Date(data1.time * 1000);
             row.innerHTML = `
-                <td>${data.id}</td>
-                <td>${data.idbin}</td>
-                <td class="message-cell">${data.message}</td>
-                <td>${data.namebin}</td>
+                <td>${data1.id}</td>
+                <td>${data1.idbin}</td>
+                <td class="message-cell">${data1.message}</td>
+                <td>${data1.namebin}</td>
                 <td>${inputTime1.toLocaleString()}</td>
-                
-                
             `;
-           // <td>${data.time}</td>
             tableBody.appendChild(row);
         });
     } catch (error) {
@@ -422,7 +475,6 @@ async function clearTableData() {
     tableBody.innerHTML = "";
 
     try {
-        const token = localStorage.getItem('jwtToken'); // Lấy token từ localStorage
 
         const response = await fetch(deleteUrl, {
             method: 'DELETE',
@@ -442,17 +494,9 @@ async function clearTableData() {
     }
 }
 
-// Tự fetch dữ liệu khi trang load
-window.addEventListener("load", () => {
-    fetchAndDisplayData(); // Fetch ngay khi trang tải xong
-
-    // Tạo interval fetch sau mỗi 60 giây
-    setInterval(fetchAndDisplayData, 60000);
-});
-
 // Gắn sự kiện cho nút Clear Table
 clearDataBtn.addEventListener("click", clearTableData);
 
-
-setInterval(fetchDataAndUpdateHTML1(), 60000);
-setInterval(fetchDataAndUpdateHTML(), 60000);
+setInterval(fetchAndDisplayData(idbinReal), 60000);
+setInterval(fetchDataAndUpdateHTML1(idbinReal), 60000);
+setInterval(fetchDataAndUpdateHTML(idbinReal), 60000);

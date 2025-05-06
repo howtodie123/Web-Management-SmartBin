@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map with Marker and Buttons</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+<div class="menu">
+    <h2 id="user-name"> Hi Phát</h2>
+    <ul>
+        <li><a href="#" id="home-link">Home</a></li>
+        <li><a href="#" id="dashboard-link">Dashboard</a></li>
+        <li><a href="#" id="logout">Log out</a></li>
+    </ul>
+</div>
+<div id="map-container">
+    <div id="map"></div>
+
+    <!-- Dashboard Content Area -->
+    <div id="dashboard-content">
+        <div class="dashboard-grid">
+            <!-- Tank Information Section -->
+            <div class="tank-info">
+                <h2>Toa B UIT</h2>
+                <p><strong>Connection:</strong> <span id="connection-status" class="offline">Offline</span></p>
+                <p><strong>Storage 1: </strong>20%<br></p>
+                <p><strong>Storage 2: </strong>20%<br></p>
+                <p><strong>Storage 3: </strong>20%<br></p>
+                <p><strong>Storage 4: </strong>20%<br></p>
+                <p><strong>RAM: </strong>20%<br></p>
+                <p><strong>Temperature: </strong>20°C<br></p>
+                <p><strong>Last update:</strong> 29 Oct 2024 14:12</p>
+            </div>
+
+            <!-- Filter Alarms Section -->
+            <div class="filter-alarms">
+                <h2 id="bin-name">Bin Name</h2>
+                <div class="tank-info">
+                    <p><strong>Storage 1: </strong><span id="storage1-value">20%</span><br></p>
+                    <p><strong>Storage 2: </strong><span id="storage2-value">20%</span><br></p>
+                    <p><strong>Storage 3: </strong><span id="storage3-value">20%</span><br></p>
+                    <p><strong>Storage 4: </strong><span id="storage4-value">20%</span><br></p>
+                    <p><strong>Temperature: </strong><span id="temperature-value">20°C</span><br></p>
+                </div>
+
+                <!-- Đặt các nút Edit và Save ngoài phần thông tin -->
+                <div class="button-container">
+                    <button id="edit-button" class="edit-button" onclick="toggleEdit()">Edit</button>
+                    <button id="save-button" class="save-button" onclick="saveData()" style="display: none;">Save</button>
+                    <button id="cancel-button" class="edit-button" onclick="cancelEdit()" style="display: none;">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Storage Levels Section -->
+            <div class="storage-levels">
+                <div class="storage-container">
+                    <div class="label">Storage 1</div>
+                    <div class="storage-tank">
+                        <div class="water-level" id="waterLevel1" style="height: 0;"></div>
+                        <div class="percentage" id="percentage1">0%</div>
+                    </div>
+                </div>
+                <div class="storage-container">
+                    <div class="label">Storage 2</div>
+                    <div class="storage-tank">
+                        <div class="water-level" id="waterLevel2" style="height: 0;"></div>
+                        <div class="percentage" id="percentage2">0%</div>
+                    </div>
+                </div>
+                <div class="storage-container">
+                    <div class="label">Storage 3</div>
+                    <div class="storage-tank">
+                        <div class="water-level" id="waterLevel3" style="height: 0;"></div>
+                        <div class="percentage" id="percentage3">0%</div>
+                    </div>
+                </div>
+                <div class="storage-container">
+                    <div class="label">Storage 4</div>
+                    <div class="storage-tank">
+                        <div class="water-level" id="waterLevel4" style="height: 0;"></div>
+                        <div class="percentage" id="percentage4">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alarms Section -->
+            <div class="alarms">
+                <div class="header-container">
+                    <h1>Warning Messages</h1>
+                    <div class="button-container">
+                        <button id="clear-data-btn">Clear</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Bin ID</th>
+                            <th>Message</th>
+                            <th>Bin Name</th>
+                            <th>Time</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-body">
+                        <!-- Nội dung sẽ được chèn động -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Buttons to control marker list and add marker -->
+    <div class="right-bar-buttons">
+        <button onclick="toggleOverlay('marker-list-overlay')">List Garbage Bin</button>
+    </div>
+
+    <!-- Marker List Overlay -->
+    <div id="marker-list-overlay" class="overlay">
+        <h2>List Garbage Bin</h2>
+        <ul id="marker-list">
+            <!-- Markers will be added here by JavaScript -->
+        </ul>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="src/auth.js"></script>
+<script src="src/indexTest.js"></script>
+</body>
+</html>
