@@ -39,5 +39,5 @@ function getUserRoles() {
 // Đăng xuất
 function logout() {
     localStorage.clear();
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 }

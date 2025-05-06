@@ -285,7 +285,7 @@ document.getElementById('logout').addEventListener('click', function() {
     // Clear user session or token if necessary
     alert('You have logged out.');
     // Redirect to login page
-    window.location.href = 'login.html'; // Change this to your actual login page URL
+    window.location.href = 'index.html'; // Change this to your actual login page URL
 });
 
 // Dashboard Page

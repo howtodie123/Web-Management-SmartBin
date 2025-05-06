@@ -8,7 +8,7 @@ alert(token);
 console.log('Token:', token);
 if (!token) {
     alert('No authentication token found. Please log in.');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 }
 
 // Fetch latest databins and update HTML
@@ -209,7 +209,7 @@ document.getElementById('home-link').addEventListener('click', event => {
 document.getElementById('logout').addEventListener('click', () => {
     localStorage.removeItem('authToken');
     alert('You have logged out.');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 });
 
 function updateWaterLevel(tankId, percentageId, level) {
