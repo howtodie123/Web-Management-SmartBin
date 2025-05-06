@@ -3,305 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Map with Marker and Buttons</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <title>Login Page</title>
     <style>
         body {
-            display: flex;
-            margin: 0;
             font-family: Arial, sans-serif;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
-        .menu {
-            width: 250px;
-            background-color: #ffffff;
-            padding: 15px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-            z-index: 1000;
-        }
-        .menu h2 {
-            text-align: center;
-            color: #333333;
-        }
-        .menu ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .menu li {
-            margin: 10px 0;
-        }
-        .menu a {
-            text-decoration: none;
-            color: #333;
-            display: block;
-            padding: 10px;
-            background-color: #e7e7e7;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .menu a:hover {
-            background-color: #ddd;
-        }
-        .right-bar-buttons {
-            position: absolute;
-            right: 10px;
-            top: 10px;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 2000;
-        }
-        .right-bar-buttons button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .right-bar-buttons button:hover {
-            background-color: #0056b3;
-        }
-        .overlay {
-            position: absolute;
-            right: 10px;
-            top: 60px;
-            width: 250px;
-            background-color: #ffffff;
-            padding: 15px;
-            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-            display: none;
-            z-index: 2000;
-        }
-        .overlay h2 {
-            text-align: center;
-            color: #333333;
-            margin-bottom: 15px;
-        }
-        .overlay ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .overlay li {
-            display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #dddddd;
-            border-radius: 4px;
-            margin: 10px 0;
-            cursor: pointer;
-        }
-        .overlay li button {
-            background-color: #ff4242;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .overlay li button:hover {
-            background-color: #e03636;
-        }
-        .add-marker-form {
-            margin-top: 20px;
-        }
-        .add-marker-form input,
-        .add-marker-form button {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            border: 1px solid #cccccc;
-        }
-        #map-container {
-            display: flex;
-            flex-grow: 1;
-            position: relative;
-        }
-        #map {
-            flex-grow: 1;
-        }
-        #dashboard-content {
-            display: none;
-            flex-grow: 1;
-            padding: 20px;
+            height: 100vh;
+            margin: 0;
+            background-image: url('img/background.png');
+            background-size: cover; /* Phủ toàn bộ màn hình */
+            background-repeat: no-repeat;
+            background-position: center center;
+            color: #333;
         }
 
-        /* Dashboard */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .tank-info, .filter-alarms, .alarms, .storage-levels {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .storage-container {
-            text-align: center;
-        }
-        .storage-tank {
-            position: relative;
-            width: 80px;
-            height: 200px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: #e0e0e0;
-            margin-top: 10px;
-        }
-        .water-level {
-            position: absolute;
-            bottom: 0;
+        .container {
             width: 100%;
-            transition: height 0.3s ease, background-color 0.3s ease;
+            max-width: 360px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .percentage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1em;
+
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: bold;
             color: #333;
         }
-        .storage-levels {
-            display: flex;
-            gap: 20px; /* khoảng cách giữa các container */
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            outline: none;
         }
-        .offline {
-            color: red;
-            background-color: #ffe6e6;
-            padding: 5px 10px;
-            border-radius: 4px;
-            display: inline-block;
+
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-group button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-<div class="menu">
-    <h2>Hi Phát</h2>
-    <ul>
-        <li><a href="#" id="home-link">Home</a></li>
-        <li><a href="#" id="dashboard-link">Dashboard</a></li>
-        <li><a href="#">Setting</a></li>
-        <li><a href="#" id="logout">Log out</a></li>
-    </ul>
-</div>
-<div id="map-container">
-    <div id="map"></div>
 
-    <!-- Dashboard Content Area -->
-    <div id="dashboard-content">
-        <div class="dashboard-grid">
-        <!-- Tank Information Section -->
-        <div class="tank-info">
-            <h2>Toa B UIT</h2>
-            <p><strong>Connection:</strong> <span class="offline">Offline</span></p>
-            <p><strong>Storage 1: </strong>20%<br></p>
-            <p><strong>Storage 2: </strong>20%<br></p>
-            <p><strong>Storage 3: </strong>20%<br></p>
-            <p><strong>Storage 4: </strong>20%<br></p>
-            <p><strong>CPU: </strong>20%<br></p>
-            <p><strong>Battery: </strong>20%<br></p>
-            <p><strong>Last update:</strong> 29 Oct 2024 14:12</p>
-        </div>
-
-        <!-- Filter Alarms Section -->
-        <div class="filter-alarms">
-            <h3>Filter alarms</h3>
-            <p><label><input type="checkbox" checked> No alarms</label>
-            <p><label><input type="checkbox" checked> High Capacity storage 1</label></p>
-            <p><label><input type="checkbox" checked> High Capacity storage 2</label></p>
-            <p><label><input type="checkbox" checked> High Capacity storage 3</label></p>
-            <p><label><input type="checkbox" checked> High Capacity storage 4</label></p>
-        </div>
-
-        <!-- Storage Levels Section -->
-        <div class="storage-levels">
-            <div class="storage-container">
-                <div class="label">Storage 1</div>
-                <div class="storage-tank">
-                    <div class="water-level" id="waterLevel1" style="height: 0;"></div>
-                    <div class="percentage" id="percentage1">0%</div>
-                </div>
-            </div>
-            <div class="storage-container">
-                <div class="label">Storage 2</div>
-                <div class="storage-tank">
-                    <div class="water-level" id="waterLevel2" style="height: 0;"></div>
-                    <div class="percentage" id="percentage2">0%</div>
-                </div>
-            </div>
-            <div class="storage-container">
-                <div class="label">Storage 3</div>
-                <div class="storage-tank">
-                    <div class="water-level" id="waterLevel3" style="height: 0;"></div>
-                    <div class="percentage" id="percentage3">0%</div>
-                </div>
-            </div>
-            <div class="storage-container">
-                <div class="label">Storage 4</div>
-                <div class="storage-tank">
-                    <div class="water-level" id="waterLevel4" style="height: 0;"></div>
-                    <div class="percentage" id="percentage4">0%</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Alarms Section -->
-        <div class="alarms">
-            <h3>Alarms</h3>
-            <table>
-                <tr>
-                    <th>Tank</th>
-                    <th>Created time</th>
-                    <th>Type</th>
-                    <th>Details</th>
-                </tr>
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #999;">No alarms found</td>
-                </tr>
-            </table>
-        </div>
-    </div>
-    </div>
-    <!-- Buttons to control marker list and add marker -->
-    <div class="right-bar-buttons">
-        <button onclick="toggleOverlay('marker-list-overlay')">List Garbage Bin</button>
-        <button onclick="toggleOverlay('add-marker-overlay')">Add Garbage Bin</button>
-    </div>
-
-    <!-- Marker List Overlay -->
-    <div id="marker-list-overlay" class="overlay">
-        <h2>List Garbage Bin</h2>
-        <ul id="marker-list">
-            <!-- Markers will be added here by JavaScript -->
-        </ul>
-    </div>
-
-    <!-- Add Marker Overlay -->
-    <div id="add-marker-overlay" class="overlay">
-        <div class="add-marker-form">
-            <h3>Add Garbage Bin</h3>
-            <input type="text" id="marker-name" placeholder="Marker Name" required>
-            <input type="text" id="marker-lat" placeholder="Latitude" required>
-            <input type="text" id="marker-lng" placeholder="Longitude" required>
-            <button id="add-marker">Add Marker</button>
-        </div>
+<div class="container">
+    <h1>Smart Bin CiTy</h1>
+    <div id="login-form" class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter your username" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+        <button onclick="login()">Login</button>
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="src/index.js"></script>
+<script>
+
+    async function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if (!username || !password) {
+            alert("Vui lòng nhập đầy đủ thông tin");
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8090/api/auth/sign-in', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: username,
+                    password: password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === "SUCCESS") {
+
+                const res = data.response;
+                localStorage.setItem("jwtToken", data.response.token);
+                localStorage.setItem("authToken", data.response.token);
+                localStorage.setItem("username", res.username);
+
+                window.location.href = 'indexKLTN.html';
+            } else {
+                alert(data.message || 'Đăng nhập không thành công!');
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+            alert('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+        const token = localStorage.getItem('authToken');
+
+    }
+
+</script>
 </body>
 </html>
