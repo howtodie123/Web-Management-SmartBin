@@ -1,4 +1,6 @@
-// api
+// api 
+// http://localhost:8090/
+// http://35.213.129.74:30600/
 url_real ="http://35.213.129.74:30600/"
 document.getElementById('user-name').textContent = "Hi " + localStorage.getItem("username");
 let markers = [];
