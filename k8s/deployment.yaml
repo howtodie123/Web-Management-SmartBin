@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-static-site
+  labels:
+    app: nginx-static-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-static-site
+  template:
+    metadata:
+      labels:
+        app: nginx-static-site
+    spec:
+      containers:
+      - name: nginx
+        image: howtodie123/web-management-smartbin:latest  # cập nhật image name phù hợp
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-static-service
+spec:
+  selector:
+    app: nginx-static-site
+  ports:
+    - protocol: TCP
+      port: 90
+      targetPort: 80
+  type: NodePort  

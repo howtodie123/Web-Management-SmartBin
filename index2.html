@@ -84,7 +84,7 @@
 <body>
 
 <div class="container">
-    <h1>Đăng ký tài khoản</h1>
+    <h1>Sign up Account</h1>
     <div id="register-form" class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" placeholder="Enter your username" required>
@@ -95,7 +95,7 @@
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Enter your password" required>
 
-        <button onclick="register()">Đăng ký</button>
+        <button onclick="register()">Register</button>
 
         <!-- Liên kết nhỏ quay lại đăng nhập -->
         <a href="index.html">return login page</a>
@@ -114,7 +114,7 @@
         }
 
         try {
-            const response = await fetch('http://localhost:8090/api/auth/sign-up', {
+            const response = await fetch('http://35.213.129.74:30600/api/auth/sign-up', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password ,role})

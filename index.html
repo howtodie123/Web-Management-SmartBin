@@ -98,7 +98,7 @@
         
         <!-- Link nhỏ để chuyển sang trang đăng kí -->
         <div style="text-align: center; margin-top: 10px;">
-            <a href="index2.html" style="font-size: 14px; color: #4CAF50; text-decoration: none;">Đăng kí</a>
+            <a href="index2.html" style="font-size: 14px; color: #4CAF50; text-decoration: none;">Register</a>
         </div>
     </div>
 </div>
@@ -116,7 +116,7 @@
 // http://localhost:8090/
 // http://35.213.129.74:30600/
         try {
-            const response = await fetch('http://localhost:8090/api/auth/sign-in', {
+            const response = await fetch('http://35.213.129.74:30600/api/auth/sign-in', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
