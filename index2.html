@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Register Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,7 +13,7 @@
             height: 100vh;
             margin: 0;
             background-image: url('img/background.png');
-            background-size: cover; /* Phủ toàn bộ màn hình */
+            background-size: cover;
             background-repeat: no-repeat;
             background-position: center center;
             color: #333;
@@ -70,81 +70,70 @@
         .form-group button:hover {
             background-color: #45a049;
         }
+
+        .form-group a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
 
-<!-- <div class="container">
-    <h1>Smart Bin CiTy</h1>
-    <div id="login-form" class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter your username" required>
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter your password" required>
-        <button onclick="login()">Login</button>
-    </div>
-</div> -->
-
 <div class="container">
-    <h1>Smart Bin CiTy</h1>
-    <div id="login-form" class="form-group">
+    <h1>Đăng ký tài khoản</h1>
+    <div id="register-form" class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" placeholder="Enter your username" required>
-        
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" required>
+
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Enter your password" required>
-        
-        <button onclick="login()">Login</button>
-        
-        <!-- Link nhỏ để chuyển sang trang đăng kí -->
-        <div style="text-align: center; margin-top: 10px;">
-            <a href="index2.html" style="font-size: 14px; color: #4CAF50; text-decoration: none;">Đăng kí</a>
-        </div>
+
+        <button onclick="register()">Đăng ký</button>
+
+        <!-- Liên kết nhỏ quay lại đăng nhập -->
+        <a href="index.html">return login page</a>
     </div>
 </div>
 
 <script>
-
-    async function login() {
+    async function register() {
         const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-
-        if (!username || !password) {
+        const role = 'admin';
+        if (!username || !email || !password) {
             alert("Please enter complete information");
             return;
         }
-// http://localhost:8090/
-// http://35.213.129.74:30600/
+
         try {
-            const response = await fetch('http://localhost:8090/api/auth/sign-in', {
+            const response = await fetch('http://localhost:8090/api/auth/sign-up', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: username,
-                    password: password })
+                body: JSON.stringify({ username, email, password ,role})
             });
 
             const data = await response.json();
 
             if (response.ok && data.status === "SUCCESS") {
-
-                const res = data.response;
-                localStorage.setItem("jwtToken", data.response.token);
-                localStorage.setItem("authToken", data.response.token);
-                localStorage.setItem("username", res.username);
-
-                window.location.href = 'indexKLTN.html';
+                alert("Registration successful! Please login.");
+                window.location.href = 'index.html';
             } else {
-                alert(data.message || 'Login failed!');
+                alert(data.message || 'Registration failed!');
             }
         } catch (error) {
             console.error('Lỗi:', error);
             alert('Unable to connect to server. Please try again later.');
         }
-        const token = localStorage.getItem('authToken');
-
     }
-
 </script>
+
 </body>
 </html>

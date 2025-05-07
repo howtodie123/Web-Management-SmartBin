@@ -1,7 +1,7 @@
 // api 
 // http://localhost:8090/
 // http://35.213.129.74:30600/
-url_real ="http://35.213.129.74:30600/"
+url_real ="http://localhost:8090/"
 document.getElementById('user-name').textContent = "Hi " + localStorage.getItem("username");
 let markers = [];
 const clearDataBtn = document.getElementById("clear-data-btn");
@@ -173,7 +173,7 @@ function fetchAndDisplayBins() {
                     }
                 })
                     .then(res => {
-                        if (!res.ok) throw new Error(`Không tìm thấy dữ liệu cho bin ID ${binId}`);
+                        if (!res.ok) throw new Error(`Can't find data for ${binId}`);
                         return res.json();
                     })
                     .then(data => {
@@ -199,10 +199,10 @@ function fetchAndDisplayBins() {
                         };
                         addMarkerToMap(markerInfo);
                     })
-                    .catch(err => console.error('Lỗi khi fetch databins:', err));
+                    .catch(err => console.error('Failed to fetch data: databins:', err));
             });
         })
-        .catch(err => console.error('Lỗi khi fetch bins:', err));
+        .catch(err => console.error('Failed to fetch data: bins:', err));
 }
 
 fetchAndDisplayBins();
