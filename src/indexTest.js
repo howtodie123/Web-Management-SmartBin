@@ -439,7 +439,7 @@ async function fetchAndDisplayData(idbin) {
     try {
         tableBody.innerHTML = "";
 
-        const response = await fetch(`http://35.213.129.74:30600/api/warnings/bin/${idbin}`, {
+        const response = await fetch(`${url_real}api/warnings/bin/${idbin}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

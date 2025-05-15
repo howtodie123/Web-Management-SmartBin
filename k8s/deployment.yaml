@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: howtodie123/web-management-smartbin:latest  # cập nhật image name phù hợp
+        image: howtodie123/web-management-smartbin:234567  # cập nhật image name phù hợp
         ports:
         - containerPort: 80
 
